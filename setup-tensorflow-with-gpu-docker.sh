@@ -42,6 +42,6 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 
 echo "LOAD AND RUN TENSORFLOW DOCKER CONTAINER"
-sudo docker pull tensorflow/tensorflow:latest-gpu
+sudo docker pull tensorflow/tensorflow:latest-gpu-py3
 sudo docker run -it --rm --runtime=nvidia tensorflow/tensorflow:latest-gpu-py3 bash
 
