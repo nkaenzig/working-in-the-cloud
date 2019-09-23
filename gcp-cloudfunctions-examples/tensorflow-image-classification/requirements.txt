@@ -1,0 +1,5 @@
+tensorflow==2.0.0b1
+opencv-python==4.1.1.26
+numpy==1.17.2
+google-cloud-storage==1.16.1
+Flask
