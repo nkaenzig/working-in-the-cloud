@@ -1,0 +1,60 @@
+- Kaggle Setup on GCP
+
+1. Launch Deep-Learning VM (optionally without GPU)
+
+2. Connect to VM
+gcloud compute ssh --project workshops-259020 --zone us-west1-b dataton-bc-vm-vm -- -L 8080:localhost:8080
+
+3. Install Kaggle API
+a) upload kaggle.json file
+gcloud compute scp --project workshops-259020 --zone us-west1-b --recurse kaggle.json dataton-bc-vm-vm:/home/nkaenzig/
+mkdir .kaggle
+sudo mv kaggle.json .kaggle/
+sudo chmod 600 .kaggle/kaggle.json
+
+b)
+pip install --user kaggle
+.local/bin/kaggle competitions download -c datatn-bancolombia-2019
+
+(if installed without --user, use ~/.local/bin/kaggle)
+
+4. Jupyter notebook already configured.. --> just open localhost:8080 in local browser
+< Is launched automatically on deep learning VM
+< when using -L 8080:localhost:8080 --> port is already forwarded
+
+5. Move Dataset to /home/jupyter
+sudo su jupyter
+mkdir /home/jupyter/data
+unzip datatn-bancolombia-2019.zip -d /home/jupyter/data/
+
+6. Make sure the jupyter user has access to all files inside the jupyter folder 
+< important e.g. after cloning code into this folder -> jupyter user needs permissions in order to save changes 
+
+sudo chown -R jupyter /home/jupyter/
+
+### Optional ###
+
+# Mount GCP file storage bucket (read only!)
+- by default only read only!
+< if you want write access you have to go to the instances settings (edit), and set "Storage"-Scope to "full" in section "Cloud API access scopes"
+
+a) install gcsfuse
+export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install gcsfuse
+
+b) 
+mkdir gcp-bucket
+/usr/bin/gcsfuse dataton-bc gcp-bucket
+
+
+# Upload files to bucket with gsutil
+sudo gsutil cp test.txt gs://dataton-bc
+
+- if you get error: "AccessDeniedException: 403 Insufficient Permission":
+1) Make sure that "Storage"-Scope to "full" in Cloud API access scopes (vm - edit options)
+
+2) authenticate in ssh terminal 
+gcloud auth login
